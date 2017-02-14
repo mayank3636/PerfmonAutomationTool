@@ -35,7 +35,7 @@ public void run() {
 	      System.out.println("Server says " + in.readUTF());
 	      client.close();
 	   }catch(IOException e) {
-	      e.printStackTrace();
+		   System.out.println("172.22.20.246 is Down currently or Server is not Running");
 	   }
 	
 }

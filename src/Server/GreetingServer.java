@@ -1,4 +1,4 @@
-package server;
+package Server;
 // File Name GreetingServer.java
 import java.net.*;
 import java.io.*;

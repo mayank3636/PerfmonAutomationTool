@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Arrays;
 
@@ -125,28 +127,106 @@ String[] command = {"CMD","/c",filePath+"\\"+"ILP.bat"};
         }
         //Wait to get exit value
         GreetingClient t1= new GreetingClient();
-        Socket client1 = new Socket("172.22.20.246", 443);
-        OutputStream outTo=client1.getOutputStream();
-        DataOutputStream outtoServer = new DataOutputStream(outTo);
-        outtoServer.writeUTF(g.testName);
-        InputStream inFromServer = client1.getInputStream();
-	      DataInputStream in = new DataInputStream(inFromServer);  
-	      System.out.println("Server says " + in.readUTF());
-	      client1.close();
-	      try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+        try{	
+            Socket client1 = new Socket("172.22.20.246", 443);
+            OutputStream outTo=client1.getOutputStream();
+            DataOutputStream outtoServer = new DataOutputStream(outTo);
+            outtoServer.writeUTF(g.testName);
+            InputStream inFromServer = client1.getInputStream();
+    	      DataInputStream in = new DataInputStream(inFromServer);  
+    	      System.out.println("Server says " + in.readUTF());
+    	      client1.close();
+    			Thread.sleep(10000);
+        }catch(ConnectException |InterruptedException |NoRouteToHostException e){
+        	System.out.println("172.22.20.246 is Down currently or Server is not Running");
+        	try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        }
+        
+	      
+	      f = new File(filePath+"\\"+"logStash.bat");
+	      fw=new FileWriter(f);
+	      bw= new BufferedWriter(fw);
+	      bw.write("@echo off");
+	      bw.write('\n');
+	      bw.write(":: BatchGotAdmin (Run as Admin code starts)");
+	      bw.write('\n');
+	      bw.write("REM --> Check for permissions");
+	      bw.write('\n');
+	      bw.write(">nul 2>&1"+" "+'"'+"%SYSTEMROOT%\\system32\\cacls.exe"+'"'+" "+'"'+"%SYSTEMROOT%\\system32\\config\\system"+'"'+'\n');
+	      bw.write('\n');
+	      bw.write("if"+" "+"'"+"%errorlevel%"+"'"+" "+ "NEQ"+" "+"'"+0+"'"+" "+"(");	
+	      bw.write('\n');
+	      bw.write("echo Requesting administrative privileges...");		
+	      bw.write('\n');
+	      bw.write("goto UACPrompt");		
+	      bw.write('\n');
+	      bw.write(") else ( goto gotAdmin )");		
+	      bw.write('\n');
+	      bw.write(":UACPrompt");	
+	      bw.write('\n');
+	      bw.write("echo Set UAC = CreateObject^("+'"'+"Shell.Application"+'"'+"^) >"+" "+'"'+"%temp%\\getadmin.vbs"+'"'+'\n');
+	      bw.write('\n');		
+	      bw.write("echo UAC.ShellExecute"+" "+'"'+"%~s0"+'"'+","+ '"'+'"'+","+ '"'+'"'+","+'"'+"runas"+'"'+","+ "1 >>"+" "+'"'+"%temp%\\getadmin.vbs"+'"'+" ");		
+	      bw.write('\n');
+	      bw.write('"'+"%temp%\\getadmin.vbs"+'"'+" ");
+	      bw.write('\n');
+	      bw.write("exit /B");		
+	      bw.write('\n');
+	      bw.write(":gotAdmin");
+	      bw.write('\n');
+	      bw.write("if exist "+" "+'"'+"%temp%\\getadmin.vbs"+'"'+" "+ "( del "+'"'+"%temp%\\getadmin.vbs"+'"'+" )");
+	      bw.write('\n');
+	      bw.write("pushd "+'"'+"%CD%"+'"');
+	      bw.write('\n');
+	      bw.write("CD /D"+'"'+ "%~dp0"+'"');		
+	      bw.write('\n');
+	      bw.write(":: BatchGotAdmin (Run as Admin code ends)");		
+	      bw.write('\n');
+	      bw.write(":: Your codes should start from the following line");		
+	      bw.write('\n');
+	      bw.write("cd "+" "+filePath);
+	      bw.write('\n');
+	      bw.write("cd %Logstash%\\bin");
+	      bw.write('\n');
+	      bw.write("logstash.bat -f logstash.conf");
+	      bw.flush();
+	      bw.close();
+	      String[] command1 = {"CMD","/c",filePath+"\\"+"logStash.bat"};	      
+	      ProcessBuilder probuilder1 = new ProcessBuilder( command1 );
+	        //You can set up your work directory
+	        probuilder1.directory(new File("c:\\demo"));
+
+	        Process process1 = probuilder1.start();
+
+	        //Read out dir output
+	        InputStream is1 = process1.getInputStream();
+	        InputStreamReader isr1 = new InputStreamReader(is1);
+	        BufferedReader br1 = new BufferedReader(isr1);
+	        String line1;
+	        System.out.printf("Output of running %s is:\n",
+	                Arrays.toString(command1));
+	        while ((line1 = br.readLine()) != null) {
+	            System.out.println(line1);
+	        }
+	      
+	      
         while(true){
+        	try{
         	t1.run();
+        	}catch(Exception e){
+        		System.out.println("172.22.20.246 is Down currently or Server is not Running");
+        	}
         	if(g.flag==true){
         		OutputStream out=process.getOutputStream();
         		OutputStreamWriter osr= new OutputStreamWriter(out);
-        		String[] command1={"CMD","/c","taskkill /F /IM cmd.exe"};
-        		ProcessBuilder probuilder1= new ProcessBuilder(command1);
-        		probuilder1.start();
+        		//String[] command1={"CMD","/c","taskkill /F /IM cmd.exe"};
+        		//ProcessBuilder probuilder1= new ProcessBuilder(command1);
+        		//probuilder1.start();
         		osr.write('2');
         		process.destroyForcibly();
         		System.exit(1);
