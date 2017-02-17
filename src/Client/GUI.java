@@ -11,7 +11,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import java.awt.Toolkit;
+import java.awt.Color;
+import java.awt.Window.Type;
+import javax.swing.JProgressBar;
 
+
+
+/**
+ * @wbp.parser.constructor 
+ *
+ */
+/**
+ * @author M1030090,Mayank Upadhyaya
+ *
+ */
 public class GUI {
 	public static  String path="";
 	public static String testName="";
@@ -24,6 +38,7 @@ public class GUI {
 
 	/**
 	 * Launch the application.
+	 * @wbp.parser.constructor 
 	 */
 	public static void GUIInvoke() {
 		EventQueue.invokeLater(new Runnable() {
@@ -40,6 +55,7 @@ public class GUI {
 
 	/**
 	 * Create the application.
+	 * @wbp.parser.constructor 
 	 */
 	public GUI() {
 		initialize();
@@ -53,16 +69,22 @@ public class GUI {
 	 */
 	private void initialize() {
 		frmPerfmonAutomation = new JFrame();
-		frmPerfmonAutomation.setTitle("PerfMon Automation");
+		frmPerfmonAutomation.setAlwaysOnTop(true);
+		frmPerfmonAutomation.setIconImage(Toolkit.getDefaultToolkit().getImage("D:\\RPA2.1\\TCP\\bin\\Resources\\logo\\logo.bmp"));
+		frmPerfmonAutomation.setBackground(new Color(153, 102, 0));
+		frmPerfmonAutomation.getContentPane().setBackground(new Color(204, 204, 204));
+		frmPerfmonAutomation.setTitle("PaCE Profiller");
 		frmPerfmonAutomation.setBounds(100, 100, 450, 300);
 		frmPerfmonAutomation.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmPerfmonAutomation.getContentPane().setLayout(null);
 		
 		JPanel panel = new JPanel();
+		panel.setBackground(new Color(204, 204, 204));
 		panel.setBounds(0, 0, 434, 20);
 		frmPerfmonAutomation.getContentPane().add(panel);
 		
-		JLabel lblWelcomePerformance = new JLabel("Welcome , Performance Tester");
+		JLabel lblWelcomePerformance = new JLabel("Welcome , user");
+		lblWelcomePerformance.setBackground(Color.BLACK);
 		panel.add(lblWelcomePerformance);
 		
 		JLabel lblTestName = new JLabel("Test Name");
@@ -70,6 +92,7 @@ public class GUI {
 		frmPerfmonAutomation.getContentPane().add(lblTestName);
 		
 		textField = new JTextField();
+		textField.setBackground(new Color(204, 255, 255));
 		textField.setBounds(201, 38, 126, 20);
 		frmPerfmonAutomation.getContentPane().add(textField);
 		textField.setColumns(10);
@@ -79,15 +102,18 @@ public class GUI {
 		frmPerfmonAutomation.getContentPane().add(lblOutputLogDirectory);
 		
 		textField_1 = new JTextField();
+		textField_1.setBackground(new Color(204, 255, 255));
 		textField_1.setBounds(201, 69, 145, 20);
 		frmPerfmonAutomation.getContentPane().add(textField_1);
 		textField_1.setColumns(10);
 		
 		JLabel Output = new JLabel("");
+		Output.setBackground(Color.GREEN);
 		Output.setBounds(31, 167, 360, 83);
 		frmPerfmonAutomation.getContentPane().add(Output);
 		
 		JButton btnStartTest = new JButton("Start Test");
+		btnStartTest.setBackground(new Color(0, 204, 153));
 		btnStartTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				testName=textField.getText();
@@ -100,6 +126,7 @@ public class GUI {
 		frmPerfmonAutomation.getContentPane().add(btnStartTest);
 		
 		JButton btnStopTest = new JButton("Stop Test");
+		btnStopTest.setBackground(new Color(51, 204, 153));
 		btnStopTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			flag=true;

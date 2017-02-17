@@ -7,7 +7,10 @@ import javax.swing.JFrame;
 public class GUIBuilder {
 
 	private JFrame frame;
-
+	/**
+	 * @author M1030090,Mayank Upadhyaya
+	 *
+	 */
 	/**
 	 * Launch the application.
 	 */

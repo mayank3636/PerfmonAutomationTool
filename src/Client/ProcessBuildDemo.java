@@ -16,7 +16,13 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Arrays;
 
+
+/**
+ * @author M1030090,Mayank Upadhyaya
+ *
+ */
 public class ProcessBuildDemo { 
+	
     public static void main(String [] args) throws IOException {
     	String filePath="";
     	GUI g= new GUI("Perfomance TEst");
@@ -106,7 +112,14 @@ bw.write('\n');
 bw.write("typeperf -cf"+" "+'"'+"ILP.cfg"+'"'+" "+"-f csv");
 bw.flush();
 bw.close();
-    	
+f= new File(filePath+"\\"+"logstash.conf");
+
+fw= new FileWriter(f);
+bw= new BufferedWriter (fw);
+String x="input {\r\n  file {\r\n    path => \""+filePath+"\\output.csv"+"\"\r\n    start_position => \"beginning\"\r\n   sincedb_path => \"/dev/null\"\r\n  }\r\n}\r\nfilter {\r\n  csv {\r\n      separator => \",\"  \r\n\t columns => [\"dateTime\",\"ILWSBClient % Processor Time\",\"ILPlatform % Processor Time\",\"ILPlatform # Bytes in all Heaps\",\"ILWSBClient # Bytes in all Heaps\",\"ILPlatform # Total committed Bytes\",\"ILWSBClient # Total committed Bytes\",\"ILPlatform % Time in GC\",\"ILWSBClient % Time in GC\"]\r\n  }\r\n   date {\r\nmatch => [ \"dateTime\", \"MM/dd/yyyy HH:mm:ss.SSS\", \"ISO8601\" ]\r\n  }\r\n  mutate {\r\nconvert => { \"ILWSBClient % Processor Time\" => \"integer\" }\r\nconvert => { \"ILPlatform % Processor Time\" => \"integer\" }\r\nconvert => { \"Total% Processor Time\" => \"integer\" }\r\nconvert => { \"ILWSBClient # Bytes in all Heaps\" => \"integer\" }\r\nconvert => { \"ILPlatform # Bytes in all Heaps\" => \"integer\" }\r\nconvert => { \"ILWSBClient % Time in GC\" => \"integer\" }\r\nconvert => { \"ILPlatform % Time in GC\" => \"integer\" }\r\nconvert => { \"ILWSBClient # Total committed Bytes\" => \"integer\" }\r\nconvert => { \"ILPlatform # Total committed Bytes\" => \"integer\" }\r\n}\r\n  }\r\noutput {\r\n   elasticsearch {\r\n     hosts => \"http://localhost:9200\"\r\n  }\r\nstdout {}\r\n}\r\n\r\n";	
+bw.write(x);
+bw.flush();
+bw.close();
 String[] command = {"CMD","/c",filePath+"\\"+"ILP.bat"};
 
         ProcessBuilder probuilder = new ProcessBuilder( command );
@@ -127,25 +140,7 @@ String[] command = {"CMD","/c",filePath+"\\"+"ILP.bat"};
         }
         //Wait to get exit value
         GreetingClient t1= new GreetingClient();
-        try{	
-            Socket client1 = new Socket("172.22.20.246", 443);
-            OutputStream outTo=client1.getOutputStream();
-            DataOutputStream outtoServer = new DataOutputStream(outTo);
-            outtoServer.writeUTF(g.testName);
-            InputStream inFromServer = client1.getInputStream();
-    	      DataInputStream in = new DataInputStream(inFromServer);  
-    	      System.out.println("Server says " + in.readUTF());
-    	      client1.close();
-    			Thread.sleep(10000);
-        }catch(ConnectException |InterruptedException |NoRouteToHostException e){
-        	System.out.println("172.22.20.246 is Down currently or Server is not Running");
-        	try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-        }
+       
         
 	      
 	      f = new File(filePath+"\\"+"logStash.bat");
@@ -193,7 +188,7 @@ String[] command = {"CMD","/c",filePath+"\\"+"ILP.bat"};
 	      bw.write('\n');
 	      bw.write("cd %Logstash%\\bin");
 	      bw.write('\n');
-	      bw.write("logstash.bat -f logstash.conf");
+	      bw.write("logstash.bat -f "+filePath+"\\"+"logstash.conf");
 	      bw.flush();
 	      bw.close();
 	      String[] command1 = {"CMD","/c",filePath+"\\"+"logStash.bat"};	      
@@ -216,11 +211,11 @@ String[] command = {"CMD","/c",filePath+"\\"+"ILP.bat"};
 	      
 	      
         while(true){
-        	try{
+        try{
         	t1.run();
-        	}catch(Exception e){
-        		System.out.println("172.22.20.246 is Down currently or Server is not Running");
-        	}
+        }catch (IllegalStateException e){
+        	System.out.println("More Data will be added in Next Cycle");
+        }
         	if(g.flag==true){
         		OutputStream out=process.getOutputStream();
         		OutputStreamWriter osr= new OutputStreamWriter(out);

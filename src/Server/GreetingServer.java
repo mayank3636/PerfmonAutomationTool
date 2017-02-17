@@ -2,7 +2,10 @@ package Server;
 // File Name GreetingServer.java
 import java.net.*;
 import java.io.*;
-
+/**
+ * @author M1030090,Mayank Upadhyaya
+ *
+ */
 public class GreetingServer extends Thread {
    private ServerSocket serverSocket;
  public static  String name="";
